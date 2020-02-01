@@ -23,6 +23,9 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 //-------------------- Pomp Driver
 #include "pomp_driver.h"
 
+// number of miliseconds to wait for the water to stop dripping
+int water_stop_time;
+
 //-------------------- Arm Motor (28BYJ-48 + ULN2003)
 #include <AccelStepper.h>
 #include <MultiStepper.h>
@@ -33,18 +36,10 @@ AccelStepper cArmMotor(AccelStepper::HALF4WIRE, pinArmMotor1, pinArmMotor3, pinA
 //-------------------- Speaker
 #include "pitches.h"
 
-
-//-------------------- Display
-
-
 //-------------------- Power saver
 #include <avr/sleep.h>  
 #include <avr/wdt.h>
 #include <avr/power.h>
-
-bool is_time_to_wake(RtcDateTime previous, RtcDateTime current){
-  return (previous.Minute() < current.Minute()-1);
-}
 
 //-------------------- Goals
 #include "GoalManager.h"

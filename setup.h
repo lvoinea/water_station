@@ -8,7 +8,7 @@
 boolean is_error = false;
 
 void setup() {
-  
+    
   //-------------------- Serial
   // Open serial communications and wait for port to open:
   Serial.begin(SERIAL_SPEED);
@@ -16,6 +16,11 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial.println("Initializing...");
+
+  //-------------------- Control Panel
+  pinMode(pinDemo, INPUT);
+  pinMode(pinSettings, INPUT);
+
   //-------------------- Real Time Clock (DS1302)
   if(!is_error){
     Rtc.Begin();
@@ -62,6 +67,8 @@ void setup() {
   if(!is_error){
     pinMode(pinPompDriver, OUTPUT);
     pomp_off();
+
+    water_stop_time = 1000;
   }
   
   //-------------------- Zero position switch
@@ -82,10 +89,10 @@ void setup() {
   //-----------------------cGoal manager
   if(!is_error){
     Serial.print("Register goals ...");
-    goal_manager.add_goal(Goal(1000,1000,1000));
-    goal_manager.add_goal(Goal(1000,1000,1000));
-    goal_manager.add_goal(Goal(1000,1000,1000));
-    goal_manager.add_goal(Goal(1000,1000,1000));
+    goal_manager.add_goal(Goal(1000,1000));
+    goal_manager.add_goal(Goal(1000,1000));
+    goal_manager.add_goal(Goal(1000,1000));
+    goal_manager.add_goal(Goal(1000,1000));
     Serial.println("OK");
   }
 

@@ -8,6 +8,11 @@
 
 #define SERIAL_SPEED 9600
 
+//--------------------- Control Panel
+
+#define pinDemo A0
+#define pinSettings A1
+
 //---------------------  Real Time Clock (DS1302)
 // DS1302:  
 //      CE pin    -> Arduino Digital 9
