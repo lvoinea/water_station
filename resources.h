@@ -41,6 +41,18 @@ AccelStepper cArmMotor(AccelStepper::HALF4WIRE, pinArmMotor1, pinArmMotor3, pinA
 #include <avr/wdt.h>
 #include <avr/power.h>
 
+//-------------------- EEPROM
+#include <EEPROMex.h>
+int address;
+int readIntEeprom(){
+  address = EEPROM.getAddress(sizeof(int));
+  return(EEPROM.readInt(address));
+}
+int writeIntEeprom(int val){
+  address = EEPROM.getAddress(sizeof(int));
+  return(EEPROM.updateInt(address, val));
+}
+
 //-------------------- Goals
 #include "GoalManager.h"
 

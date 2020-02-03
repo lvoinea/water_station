@@ -18,7 +18,6 @@ int pinZeroPosValue = 1;
 int menu = 0;
 int user_input = 0;
 
-int nr_cylinders = goal_manager.size();
 int nr_timers = 0;
 
 RtcDateTime completionTime = Rtc.GetDateTime();
@@ -126,6 +125,7 @@ void loop() {
 
      //-------------------- Display menu
      if (menu == 0) {
+       Serial.println();
        Serial.println("Top Menu:");
        Serial.println("------------");
        Serial.println(" 1 - Print current configuration");
@@ -136,6 +136,7 @@ void loop() {
        Serial.println("-------------");
        Serial.println("Please input selection");
      } else if (menu == 2) {
+       Serial.println();
        Serial.println("Cylinder Menu:");
        Serial.println("------------");
        Serial.println(" 1 - Set number of cylinders");
@@ -144,6 +145,7 @@ void loop() {
        Serial.println("-------------");
        Serial.println("Please input selection");
      } else if (menu == 4) {
+       Serial.println();
        Serial.println("Timer Menu:");
        Serial.println("------------");
        Serial.println(" 1 - Set number of timers");
@@ -161,11 +163,12 @@ void loop() {
      if (menu == 0) {
         if (user_input == 1) {
          // TODO: Print current settings
-         Serial.println("Current settings");
-         Serial.print("  Number of cylinders: ");
-         Serial.println(nr_cylinders);
+         goal_manager.display();
+
+         Serial.println();
          Serial.print("  Water stop time: ");
          Serial.println(water_stop_time);
+         
          Serial.print("  Number of timers: ");
          Serial.println(nr_timers);
          Serial.println();
@@ -189,15 +192,15 @@ void loop() {
      else if (menu == 2) {
        if (user_input == 1) {
         Serial.println("Input the number of cylinders.");
-        nr_cylinders = read_user_input();
-        // TODO: Reserve space for goals
+        int nr_cylinders = read_user_input();
+        goal_manager.reserve(nr_cylinders);
        }
        else if (user_input == 2) {
         Serial.println("Input the cylinder number.");
         int cylinder_number = read_user_input();
         Serial.println("Input the cylinder pomp time.");
-        int cylinder_pomp_time = read_user_input();
-        //TODO: Update the cylinder
+        int running_time = read_user_input();
+        goal_manager.get_goal(cylinder_number).pomp_running_time = running_time;
        }
        else if (user_input == 3) {
         menu = 0;

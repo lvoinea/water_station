@@ -77,8 +77,7 @@ void setup() {
   }
 
   //-------------------- Motor (28BYJ-48 + ULN2003)
-  //if(!is_error){
-  //} 
+  
 
   //-------------------- Display
   if(!is_error){
@@ -89,10 +88,23 @@ void setup() {
   //-----------------------cGoal manager
   if(!is_error){
     Serial.print("Register goals ...");
-    goal_manager.add_goal(Goal(1000,1000));
-    goal_manager.add_goal(Goal(1000,1000));
-    goal_manager.add_goal(Goal(1000,1000));
-    goal_manager.add_goal(Goal(1000,1000));
+    goal_manager.load();
+    goal_manager.display();
+    
+    water_stop_time = readIntEeprom();
+    Serial.println();
+    Serial.print("  Water stop time: ");
+    Serial.println(water_stop_time);
+
+    Serial.println("OK");
+  }
+
+  //------------------- Timers
+  if(!is_error){
+    Serial.print("Register goals ...");
+
+    //TODO: Read timers from EEPROM
+
     Serial.println("OK");
   }
 

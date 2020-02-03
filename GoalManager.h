@@ -1,4 +1,4 @@
-#include <LinkedList.h>
+#define NR_GOALS 6
 
 class Goal{
   public:
@@ -15,17 +15,23 @@ Goal::Goal(int steps_, int pomp_running_time_): steps(steps_), pomp_running_time
 
 class GoalManager{
 
-  LinkedList<Goal> goal_list;
+  Goal goal_list[NR_GOALS];
   int current_goal = 0;
+  int total_goals = 0;
   
   public:
     GoalManager(){}
     void reset();
     void clear();
     int size();
-    void add_goal(Goal goal);
+    void reserve(int nr_goals);
+    bool load();
+    bool save();
+    void display();
+
+
     Goal get_next_goal();
-    Goal get_goal(int pos);
+    Goal& get_goal(int pos);
     bool has_next_goal();
 };
 
@@ -34,26 +40,65 @@ void GoalManager::reset(){
 }
 
 void GoalManager::clear(){
-  goal_list.clear();
+  total_goals = 0;
+  reset();
+}
+
+void GoalManager::reserve(int nr_goals){
+  clear();
+  if (nr_goals <= NR_GOALS){
+    total_goals = nr_goals;
+  }
+  else {
+    total_goals = NR_GOALS;
+  }
+  for(int i=0; i<total_goals; i++){
+    goal_list[i].steps = 1000;
+    goal_list[i].pomp_running_time = 0;
+  }
+}
+
+bool GoalManager::load(){
+  clear();
+  reserve(readIntEeprom());
+  for(int i=0; i<total_goals; i++){
+    goal_list[i].pomp_running_time = readIntEeprom();
+  }
+}
+
+bool GoalManager::save(){
+  bool result = writeIntEeprom(total_goals);
+  for(int i=0; i<total_goals; i++){
+    result = result and writeIntEeprom(goal_list[i].pomp_running_time);
+  }
+  return(result);
+}
+
+void GoalManager::display(){
+   Serial.println();
+   Serial.print("  Cylinders: ");
+   Serial.println(total_goals);
+   for (int i=0; i<total_goals; i++){
+      Serial.println("  ----------");
+      Serial.print("  Cyl: ");
+      Serial.println(i);
+      Serial.print("  Running time: ");
+      Serial.println(goal_list[i].pomp_running_time);
+   }
 }
 
 int GoalManager::size(){
-  return goal_list.size();
-}
-
-void GoalManager::add_goal(Goal goal){
-  goal_list.add(goal);
+  return total_goals;
 }
 
 bool GoalManager::has_next_goal(){
-  return current_goal < goal_list.size();
+  return current_goal < total_goals;
 }
 
 Goal GoalManager::get_next_goal(){
-  current_goal += 1;
-  return goal_list.get(current_goal-1);
+  return goal_list[current_goal++];
 }
 
-Goal GoalManager::get_goal(int pos){
-    return goal_list.get(pos);
+Goal& GoalManager::get_goal(int pos){
+    return goal_list[pos];
 }
