@@ -18,7 +18,6 @@ int pinZeroPosValue = 1;
 int menu = 0;
 int user_input = 0;
 
-int nr_cylinders = goal_manager.size();
 int nr_timers = 0;
 
 RtcDateTime completionTime = Rtc.GetDateTime();
@@ -73,8 +72,8 @@ void shutdown(bool success=true){
   // Stop the pomp
   pomp_off();
 
-  //Reset the goal manager
-  goal_manager.reset();
+  //Reset the cylinder register
+  cylinder_register.reset();
 
   // Report stop time
   Serial.print("Shutdown at: ");
@@ -109,7 +108,6 @@ void loop() {
   }
   //------------------------------------------------------------ SETTINGUP
   if (state == SETTINGUP){
-
     /**
      * In this state the microcontroller interacts with an user
      * over the serial interface in order to set-up the various
@@ -123,106 +121,109 @@ void loop() {
      *   of seconds to pump.
      */
 
+    //-------------------- Display menu
+    if (menu == 0) {
+      Serial.println();
+      Serial.println("Top Menu:");
+      Serial.println("------------");
+      Serial.println(" 1 - Print configuration");
+      Serial.println(" 2 - Configure cylinders");
+      Serial.println(" 3 - Configure timers");
+      Serial.println(" 4 - Save & exit");
+      Serial.println("-------------");
+      Serial.println("Please input selection");
+    } 
+    else if (menu == 2) {
+      Serial.println();
+      Serial.println("Cylinder Menu:");
+      Serial.println("------------");
+      Serial.println(" 1 - Set number of cylinders");
+      Serial.println(" 2 - Set water stop time");
+      Serial.println(" 3 - Configure cylinder");
+      Serial.println(" 4 - Back");
+      Serial.println("-------------");
+      Serial.println("Please input selection");
+    } 
+    else if (menu == 3) {
+      Serial.println();
+      Serial.println("Timer Menu:");
+      Serial.println("------------");
+      Serial.println(" 1 - Set number of timers");
+      Serial.println(" 2 - Configure timer");
+      Serial.println(" 3 - Back");
+      Serial.println("-------------");
+      Serial.println("Please input selection");
+    }
 
-     //-------------------- Display menu
-     if (menu == 0) {
-       Serial.println("Top Menu:");
-       Serial.println("------------");
-       Serial.println(" 1 - Print current configuration");
-       Serial.println(" 2 - Set cylinders");
-       Serial.println(" 3 - Set water stop time");
-       Serial.println(" 4 - Set timers");
-       Serial.println(" 5 - Exit");
-       Serial.println("-------------");
-       Serial.println("Please input selection");
-     } else if (menu == 2) {
-       Serial.println("Cylinder Menu:");
-       Serial.println("------------");
-       Serial.println(" 1 - Set number of cylinders");
-       Serial.println(" 2 - Set cylinder");
-       Serial.println(" 3 - Back");
-       Serial.println("-------------");
-       Serial.println("Please input selection");
-     } else if (menu == 4) {
-       Serial.println("Timer Menu:");
-       Serial.println("------------");
-       Serial.println(" 1 - Set number of timers");
-       Serial.println(" 2 - Set timer");
-       Serial.println(" 3 - Back");
-       Serial.println("-------------");
-       Serial.println("Please input selection");
-     }
+    //-------------------- Acquire user input
+    user_input = read_user_input();
 
-     //-------------------- Acquire user input
-     
-     user_input = read_user_input();
-
-     //-------------------- Handle user input
-     if (menu == 0) {
-        if (user_input == 1) {
-         // TODO: Print current settings
-         Serial.println("Current settings");
-         Serial.print("  Number of cylinders: ");
-         Serial.println(nr_cylinders);
-         Serial.print("  Water stop time: ");
-         Serial.println(water_stop_time);
-         Serial.print("  Number of timers: ");
-         Serial.println(nr_timers);
-         Serial.println();
-        }
-        else if (user_input == 2) {
-          menu = 2;
-        }
-        else if (user_input == 3) {
-          Serial.println("Input the delay time for water stop.");
-          water_stop_time = read_user_input();
-        }
-        else if (user_input == 4) {
-          menu = 4;
-        }
-        else if (user_input == 5) {
-          Serial.println("Bye, bye!"); 
-          state = SLEEPING;
-        }
-     }
-     //------ Cylinders
-     else if (menu == 2) {
-       if (user_input == 1) {
+    //-------------------- Handle user input
+    if (menu == 0) {
+      if (user_input == 1) {
+        cylinder_register.display();
+        timer_register.display();
+      }
+      else if (user_input == 2) {
+        menu = 2;
+      }
+      else if (user_input == 3) {
+        menu = 3;
+      }
+      else if (user_input == 4) {
+        Serial.println("Saving configuration...");
+        cylinder_register.save();
+        timer_register.save();
+        Serial.println("Bye, bye!"); 
+        state = SLEEPING;
+      }
+    }
+    //------ Cylinders
+    else if (menu == 2) {
+      if (user_input == 1) {
         Serial.println("Input the number of cylinders.");
-        nr_cylinders = read_user_input();
-        // TODO: Reserve space for goals
-       }
-       else if (user_input == 2) {
+        int nr_cylinders = read_user_input();
+        cylinder_register.set_nr_cylinders(nr_cylinders);
+      }
+      else if (user_input == 2) {
+        Serial.println("Input the delay time for water stop.");
+        cylinder_register.water_stop_time = read_user_input();
+      }
+      else if (user_input == 3) {
         Serial.println("Input the cylinder number.");
         int cylinder_number = read_user_input();
-        Serial.println("Input the cylinder pomp time.");
-        int cylinder_pomp_time = read_user_input();
-        //TODO: Update the cylinder
-       }
-       else if (user_input == 3) {
+        
+        Serial.println("Input the cylinder pomp running time.");
+        int running_time = read_user_input();
+        cylinder_register.get_cylinder(cylinder_number).pomp_running_time = running_time;
+      }
+      else if (user_input == 4) {
         menu = 0;
-       }
-     } 
-     //------ Timers
-     else if (menu == 4) {
-       if (user_input == 1) {
+      }
+    } 
+    //------ Timers
+    else if (menu == 3) {
+      if (user_input == 1) {
         Serial.println("Input the number of timers.");
         nr_timers = read_user_input();
-        // TODO: reserve space for timers
-       }
-       else if (user_input == 2) {
+        timer_register.set_nr_timers(nr_timers);
+      }
+      else if (user_input == 2) {
         Serial.println("Input the timer number.");
         int timer_number = read_user_input();
+
         Serial.println("Input the timer hour.");
-        int timer_hour = read_user_input();
+        int hour = read_user_input();
+        timer_register.get_timer(timer_number).hour = (byte)hour;
+
         Serial.println("Input the timer minute.");
-        int timer_minute = read_user_input();
-        // TODO: Update the timer
-       }
-       else if (user_input == 3) {
+        int minute = read_user_input();
+        timer_register.get_timer(timer_number).minute = (byte)minute;
+      }
+      else if (user_input == 3) {
         menu = 0;
-       }
-     }
+      }
+    }
   }
   //------------------------------------------------------------ INITIALIZING
   if (state == INITIALIZING) {
@@ -271,7 +272,7 @@ void loop() {
      * to detect when the arm reaches the start position. When that 
      * position is reached, the switch connected to the pinZeroPos
      * will be pressed by the arm and the pin will read HIGH. At that
-     * point the microcontroller will enter the goal selection state
+     * point the microcontroller will enter the cylinder selection state
      * (i.e., SELECTING).
      */
     
@@ -301,9 +302,9 @@ void loop() {
      * the SLEEPING state. 
      */ 
     
-     if (goal_manager.has_next_goal()){
-        current_goal = goal_manager.get_next_goal();
-        cArmMotor.move(current_goal.steps);
+     if (cylinder_register.has_next_cylinder()){
+        current_cylinder = cylinder_register.get_next_cylinder();
+        cArmMotor.move(current_cylinder.steps);
         cArmMotor.setSpeed(1000);
         state = ACQUIRING;
       } else {
@@ -350,11 +351,11 @@ void loop() {
     
     //  Pomp the water
     pomp_on();
-    delay(current_goal.pomp_running_time);
+    delay(current_cylinder.pomp_running_time);
     pomp_off();
 
     // Wait for the water to stop
-    delay(water_stop_time);
+    delay(cylinder_register.water_stop_time);
     
     state = SELECTING;
       

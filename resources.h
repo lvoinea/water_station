@@ -23,8 +23,7 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 //-------------------- Pomp Driver
 #include "pomp_driver.h"
 
-// number of miliseconds to wait for the water to stop dripping
-int water_stop_time;
+
 
 //-------------------- Arm Motor (28BYJ-48 + ULN2003)
 #include <AccelStepper.h>
@@ -41,8 +40,25 @@ AccelStepper cArmMotor(AccelStepper::HALF4WIRE, pinArmMotor1, pinArmMotor3, pinA
 #include <avr/wdt.h>
 #include <avr/power.h>
 
-//-------------------- Goals
-#include "GoalManager.h"
+//-------------------- EEPROM
+#include <EEPROMex.h>
 
-GoalManager goal_manager;
-Goal current_goal;
+int reserve_int_eeprom(){
+  return(EEPROM.getAddress(sizeof(int)));
+}
+
+int reserve_byte_eeprom(){
+  return(EEPROM.getAddress(sizeof(byte)));
+}
+
+//-------------------- Cylinders
+#include "CylinderRegister.h"
+
+CylinderRegister cylinder_register;
+Cylinder current_cylinder;
+
+//-------------------- Timers
+#include "TimerRegister.h"
+
+TimerRegister timer_register;
+Timer current_timer;
