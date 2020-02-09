@@ -85,7 +85,7 @@ void setup() {
 
   //-------------------- Cylinder register
   if(!is_error){
-    Serial.print("Load cylinders ...");
+    Serial.print("Loading cylinders ... ");
     cylinder_register.load();
     Serial.println("OK");
     cylinder_register.display();
@@ -93,6 +93,7 @@ void setup() {
 
   //------------------- Timer register
   if(!is_error){
+    Serial.print("Loading timers ... ");
     timer_register.load();
     Serial.println("OK");
     timer_register.display();

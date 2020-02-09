@@ -129,7 +129,7 @@ void loop() {
       Serial.println(" 1 - Print configuration");
       Serial.println(" 2 - Configure cylinders");
       Serial.println(" 3 - Configure timers");
-      Serial.println(" 4 - Exit");
+      Serial.println(" 4 - Save & exit");
       Serial.println("-------------");
       Serial.println("Please input selection");
     } 
@@ -162,11 +162,7 @@ void loop() {
     if (menu == 0) {
       if (user_input == 1) {
         cylinder_register.display();
-
-        // TODO: Print current timer settings
-        Serial.print("  Number of timers: ");
-        Serial.println(nr_timers);
-        Serial.println();
+        timer_register.display();
       }
       else if (user_input == 2) {
         menu = 2;
@@ -175,6 +171,9 @@ void loop() {
         menu = 3;
       }
       else if (user_input == 4) {
+        Serial.println("Saving configuration...");
+        cylinder_register.save();
+        timer_register.save();
         Serial.println("Bye, bye!"); 
         state = SLEEPING;
       }
@@ -198,7 +197,7 @@ void loop() {
         int running_time = read_user_input();
         cylinder_register.get_cylinder(cylinder_number).pomp_running_time = running_time;
       }
-      else if (user_input == 3) {
+      else if (user_input == 4) {
         menu = 0;
       }
     } 
@@ -207,16 +206,19 @@ void loop() {
       if (user_input == 1) {
         Serial.println("Input the number of timers.");
         nr_timers = read_user_input();
-        // TODO: reserve space for timers
+        timer_register.set_nr_timers(nr_timers);
       }
       else if (user_input == 2) {
         Serial.println("Input the timer number.");
         int timer_number = read_user_input();
+
         Serial.println("Input the timer hour.");
-        int timer_hour = read_user_input();
+        int hour = read_user_input();
+        timer_register.get_timer(timer_number).hour = (byte)hour;
+
         Serial.println("Input the timer minute.");
-        int timer_minute = read_user_input();
-        // TODO: Update the timer
+        int minute = read_user_input();
+        timer_register.get_timer(timer_number).minute = (byte)minute;
       }
       else if (user_input == 3) {
         menu = 0;

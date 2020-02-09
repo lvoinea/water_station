@@ -160,14 +160,18 @@ bool TimerRegister::save(){
 void TimerRegister::display(){
   Serial.println();
   Serial.print("  Timers: ");
-  Serial.println(used_timers);
-  for (int i=0; i<used_timers; i++){
-    Serial.println("  ----------");
-    Serial.print("  Timer: ");
-    Serial.print(i);
-    Serial.print(" ");
-    timer_list[i].display();
-    Serial.println();
+  if (used_timers > 0) {
+    Serial.println(used_timers);
+    for (int i=0; i<used_timers; i++){
+      Serial.println("  ----------");
+      Serial.print("  Timer: ");
+      Serial.print(i);
+      Serial.print(" ");
+      timer_list[i].display();
+      Serial.println();
+    }
+  } else {
+    Serial.println("not configured");
   }
 }
 
