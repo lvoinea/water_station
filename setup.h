@@ -67,8 +67,6 @@ void setup() {
   if(!is_error){
     pinMode(pinPompDriver, OUTPUT);
     pomp_off();
-
-    water_stop_time = 1000;
   }
   
   //-------------------- Zero position switch
@@ -79,33 +77,25 @@ void setup() {
   //-------------------- Motor (28BYJ-48 + ULN2003)
   
 
-  //-------------------- Display
+  //-------------------- LED display
   if(!is_error){
     pinMode(pinError, OUTPUT);
     pinMode(pinOn, OUTPUT);
   } 
 
-  //-----------------------cGoal manager
+  //-------------------- Cylinder register
   if(!is_error){
-    Serial.print("Register goals ...");
-    goal_manager.load();
-    goal_manager.display();
-    
-    water_stop_time = readIntEeprom();
-    Serial.println();
-    Serial.print("  Water stop time: ");
-    Serial.println(water_stop_time);
-
+    Serial.print("Load cylinders ...");
+    cylinder_register.load();
     Serial.println("OK");
+    cylinder_register.display();
   }
 
-  //------------------- Timers
+  //------------------- Timer register
   if(!is_error){
-    Serial.print("Register goals ...");
-
-    //TODO: Read timers from EEPROM
-
+    timer_register.load();
     Serial.println("OK");
+    timer_register.display();
   }
 
   //------------------- Initialization done

@@ -25,6 +25,12 @@
 #define pinRtcDat 8
 #define pinRtcRst 9
 
+//-------------------- Cylinders
+#define NR_CYLINDERS 6
+
+//-------------------- Timers
+#define NR_TIMERS 4
+
 //-------------------- Pomp Driver
 #define pinPompDriver 10
 

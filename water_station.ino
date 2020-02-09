@@ -14,7 +14,7 @@
 /**
  * TODO:
  * - Read configuration settings from serial.
- * - Initialize the goal manager from EPROM.
+ * - Initialize the cylinder register from EPROM.
  * - Test with RTC in circuit.
  * - Migrate the circuit to a standalone chip. (3V required by the RTC to read correctly).
  * - Add amplification circuit to buzzer.
