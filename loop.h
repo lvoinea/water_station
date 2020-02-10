@@ -20,9 +20,8 @@ int user_input = 0;
 
 int nr_timers = 0;
 
-RtcDateTime completionTime = Rtc.GetDateTime();
-bool is_time_to_wake(RtcDateTime current){
-  return (completionTime.Minute() < current.Minute()-1);
+bool is_time_to_wake(const Time& current){
+  return (completion_time.minute < current.minute-1);
 }
 
 int read_user_input(){
@@ -77,8 +76,7 @@ void shutdown(bool success=true){
 
   // Report stop time
   Serial.print("Shutdown at: ");
-  RtcDateTime now = Rtc.GetDateTime();
-  printDateTime(now);
+  printDateTime(rtc.getTime());
   Serial.println();
 
   // Switch off the RUNNING sign
@@ -93,8 +91,6 @@ void shutdown(bool success=true){
 
 void loop() {
 
-  //TODO
-  //test with rtc added to the circuit
 
   //------------------------------------------------------------ DUMMY
   if (state == DUMMY){
@@ -181,19 +177,19 @@ void loop() {
     //------ Cylinders
     else if (menu == 2) {
       if (user_input == 1) {
-        Serial.println("Input the number of cylinders.");
+        Serial.print("Input the "); Serial.println("number of cylinders.");
         int nr_cylinders = read_user_input();
         cylinder_register.set_nr_cylinders(nr_cylinders);
       }
       else if (user_input == 2) {
-        Serial.println("Input the delay time for water stop.");
+        Serial.print("Input the "); Serial.println("delay time for water stop.");
         cylinder_register.water_stop_time = read_user_input();
       }
       else if (user_input == 3) {
-        Serial.println("Input the cylinder number.");
+        Serial.print("Input the "); Serial.println("cylinder number.");
         int cylinder_number = read_user_input();
         
-        Serial.println("Input the cylinder pomp running time.");
+        Serial.print("Input the "); Serial.println("cylinder pomp running time.");
         int running_time = read_user_input();
         cylinder_register.get_cylinder(cylinder_number).pomp_running_time = running_time;
       }
@@ -204,19 +200,19 @@ void loop() {
     //------ Timers
     else if (menu == 3) {
       if (user_input == 1) {
-        Serial.println("Input the number of timers.");
+        Serial.print("Input the "); Serial.println("number of timers.");
         nr_timers = read_user_input();
         timer_register.set_nr_timers(nr_timers);
       }
       else if (user_input == 2) {
-        Serial.println("Input the timer number.");
+        Serial.print("Input the "); Serial.println("timer number.");
         int timer_number = read_user_input();
 
-        Serial.println("Input the timer hour.");
+        Serial.print("Input the "); Serial.println("timer hour.");
         int hour = read_user_input();
         timer_register.get_timer(timer_number).hour = (byte)hour;
 
-        Serial.println("Input the timer minute.");
+        Serial.print("Input the "); Serial.println("timer minute.");
         int minute = read_user_input();
         timer_register.get_timer(timer_number).minute = (byte)minute;
       }
@@ -345,8 +341,7 @@ void loop() {
     Serial.print("Delivering at: ");
     
     //Log time
-    RtcDateTime now = Rtc.GetDateTime();
-    printDateTime(now);
+    printDateTime(rtc.getTime());
     Serial.println();
     
     //  Pomp the water
@@ -369,14 +364,8 @@ void loop() {
      * state.
      */
 
-      RtcDateTime now = Rtc.GetDateTime();
-      if (!now.IsValid()) {
-          Serial.println("RTC lost confidence in the DateTime!");
-          shutdown(false);
-      } else {
-        completionTime = now;
-        state = SLEEPING;
-      }
+    completion_time = rtc.getTime();
+    state = SLEEPING;
      
   } else 
   //------------------------------------------------------------ SLEEPING
@@ -426,7 +415,7 @@ void loop() {
     pinValue = digitalRead(pinDemo);
     if(pinValue == HIGH){
       Serial.println("Demo mode activated.");
-      state = INITIALIZING;
+      state = DUMMY;
     } 
     
     // Check for request for set-up
@@ -438,14 +427,8 @@ void loop() {
 
     // Check for timers
     if (state == SLEEPING) {
-      RtcDateTime now = Rtc.GetDateTime();
-      if (!now.IsValid()) {
-          Serial.println("RTC lost confidence in the DateTime!");
-          //shutdown(false);
-      } else {
-         if (is_time_to_wake(now)) {
-            state = INITIALIZING;
-         }
+      if (is_time_to_wake(rtc.getTime())) {
+        state = DUMMY;
       }
     }
 

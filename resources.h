@@ -13,17 +13,22 @@
 // However, reading the time is in that case not stable.
 // In order to get stable read, one needs to suply the chip with 3.3V.
 
-#include <ThreeWire.h>  
-#include <RtcDS1302.h>
+// #include <ThreeWire.h>  
+// #include <RtcDS1302.h>
+// #include "rtc.h"
+
+// ThreeWire myWire(pinRtcDat, pinRtcClk, pinRtcRst); 
+// RtcDS1302<ThreeWire> Rtc(myWire);
+
+// https://github.com/NorthernWidget/DS3231
+#include <DS3231.h>
 #include "rtc.h"
 
-ThreeWire myWire(pinRtcDat, pinRtcClk, pinRtcRst); 
-RtcDS1302<ThreeWire> Rtc(myWire);
+DS3231  rtc(pinSDA, pinSCL);
+Time completion_time;
 
 //-------------------- Pomp Driver
 #include "pomp_driver.h"
-
-
 
 //-------------------- Arm Motor (28BYJ-48 + ULN2003)
 #include <AccelStepper.h>

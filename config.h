@@ -21,9 +21,12 @@
 //      VCC pin   -> VCC
 //      GND pin   -> GND
 
-#define pinRtcClk 7
-#define pinRtcDat 8
-#define pinRtcRst 9
+//#define pinRtcClk 7
+//#define pinRtcDat 8
+//#define pinRtcRst 9
+
+#define pinSDA 8
+#define pinSCL 9
 
 //-------------------- Cylinders
 #define NR_CYLINDERS 6

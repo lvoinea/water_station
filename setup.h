@@ -23,44 +23,54 @@ void setup() {
 
   //-------------------- Real Time Clock (DS1302)
   if(!is_error){
-    Rtc.Begin();
 
-    RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-    printDateTime(compiled);
-    Serial.println();
+    
+    pinMode(pinSDA, INPUT_PULLUP);
+    pinMode(pinSCL, INPUT_PULLUP);
 
-    if (!Rtc.IsDateTimeValid()) 
-    {
-        // Common Causes:
-        //    1) first time you ran and the device wasn't running yet
-        //    2) the battery on the device is low or even missing
+    rtc.begin();
 
-        Serial.println("RTC lost confidence in the DateTime!");
-        Rtc.SetDateTime(compiled);
-    }
+    
+    completion_time= rtc.getTime();
 
-    if (Rtc.GetIsWriteProtected())
-    {
-        Serial.println("RTC was write protected, enabling writing now");
-        Rtc.SetIsWriteProtected(false);
-    }
+    // Rtc.Begin();
 
-    if (!Rtc.GetIsRunning())
-    {
-        Serial.println("RTC was not actively running, starting now");
-        Rtc.SetIsRunning(true);
-    }
+    // RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+    // printDateTime(compiled);
+    // Serial.println();
 
-    RtcDateTime now = Rtc.GetDateTime();
-    if (now <= compiled) 
-    {
-        Serial.println("RTC is older than compile time!  (Updating DateTime)");
-        Rtc.SetDateTime(compiled);
-    }
-    else if (now > compiled) 
-    {
-        Serial.println("RTC is newer than compile time. (this is expected)");
-    }
+    // if (!Rtc.IsDateTimeValid()) 
+    // {
+    //     // Common Causes:
+    //     //    1) first time you ran and the device wasn't running yet
+    //     //    2) the battery on the device is low or even missing
+
+    //     Serial.println("RTC lost confidence in the DateTime!");
+    //     Rtc.SetDateTime(compiled);
+    // }
+
+    // if (Rtc.GetIsWriteProtected())
+    // {
+    //     Serial.println("RTC was write protected, enabling writing now");
+    //     Rtc.SetIsWriteProtected(false);
+    // }
+
+    // if (!Rtc.GetIsRunning())
+    // {
+    //     Serial.println("RTC was not actively running, starting now");
+    //     Rtc.SetIsRunning(true);
+    // }
+
+    // RtcDateTime now = Rtc.GetDateTime();
+    // if (now <= compiled) 
+    // {
+    //     Serial.println("RTC is older than compile time!  (Updating DateTime)");
+    //     Rtc.SetDateTime(compiled);
+    // }
+    // else if (now > compiled) 
+    // {
+    //     Serial.println("RTC is newer than compile time. (this is expected)");
+    // }
     
   }
   //-------------------- Pomp Driver
@@ -100,8 +110,9 @@ void setup() {
   }
 
   //------------------- Initialization done
-  Serial.println("Initialization OK");
-  RtcDateTime now = Rtc.GetDateTime();
-  printDateTime(now);
+  Serial.print("Initialization finished at: ");
+  // RtcDateTime now = Rtc.GetDateTime();
+  // printDateTime(now);
+  printDateTime(rtc.getTime());
   Serial.println();
 }
