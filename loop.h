@@ -13,15 +13,18 @@ typedef enum State{
 };
 State state = SLEEPING;
 
-int pinValue = 0;
-int pinZeroPosValue = 1; 
 int menu = 0;
-int user_input = 0;
-
-int nr_timers = 0;
 
 bool is_time_to_wake(const Time& current){
-  return (completion_time.minute < current.minute-1);
+  bool time_to_wake = false;
+  for(int i=0; i<timer_register.get_nr_timers(); i++){
+    Timer timer = timer_register.get_timer(i);
+    if ((timer.hour == current.hour) && (timer.minute == current.minute) && (current.sec < 10)){
+      time_to_wake = true;
+      break;
+    }
+  }
+  return time_to_wake;
 }
 
 int read_user_input(){
@@ -76,7 +79,7 @@ void shutdown(bool success=true){
 
   // Report stop time
   Serial.print("Shutdown at: ");
-  printDateTime(rtc.getTime());
+  print_date_time(rtc.getTime());
   Serial.println();
 
   // Switch off the RUNNING sign
@@ -122,10 +125,11 @@ void loop() {
       Serial.println();
       Serial.println("Top Menu:");
       Serial.println("------------");
-      Serial.println(" 1 - Print configuration");
-      Serial.println(" 2 - Configure cylinders");
-      Serial.println(" 3 - Configure timers");
-      Serial.println(" 4 - Save & exit");
+      Serial.print(" 1 - "); Serial.println("Print configuration");
+      Serial.print(" 2 - "); Serial.print("Configure "); Serial.println("cylinders");
+      Serial.print(" 3 - "); Serial.print("Configure "); Serial.println("timers");
+      Serial.print(" 4 - "); Serial.println("Set current time");
+      Serial.print(" 5 - "); Serial.println("Save & exit");
       Serial.println("-------------");
       Serial.println("Please input selection");
     } 
@@ -133,10 +137,10 @@ void loop() {
       Serial.println();
       Serial.println("Cylinder Menu:");
       Serial.println("------------");
-      Serial.println(" 1 - Set number of cylinders");
-      Serial.println(" 2 - Set water stop time");
-      Serial.println(" 3 - Configure cylinder");
-      Serial.println(" 4 - Back");
+      Serial.print(" 1 - "); Serial.print("Set number of "); Serial.println("cylinders");
+      Serial.print(" 2 - "); Serial.println("Set water stop time");
+      Serial.print(" 3 - "); Serial.print("Configure "); Serial.println("cylinder");
+      Serial.print(" 4 - "); Serial.println("Back");
       Serial.println("-------------");
       Serial.println("Please input selection");
     } 
@@ -144,19 +148,22 @@ void loop() {
       Serial.println();
       Serial.println("Timer Menu:");
       Serial.println("------------");
-      Serial.println(" 1 - Set number of timers");
-      Serial.println(" 2 - Configure timer");
-      Serial.println(" 3 - Back");
+      Serial.print(" 1 - "); Serial.print("Set number of "); Serial.println("timers");
+      Serial.print(" 2 - "); Serial.print("Configure "); Serial.println("timer");
+      Serial.print(" 3 - "); Serial.println("Back");
       Serial.println("-------------");
       Serial.println("Please input selection");
     }
 
     //-------------------- Acquire user input
-    user_input = read_user_input();
+    int user_input = read_user_input();
 
     //-------------------- Handle user input
     if (menu == 0) {
       if (user_input == 1) {
+        Serial.print("  Current time: ");
+        print_date_time(rtc.getTime());
+        Serial.println();
         cylinder_register.display();
         timer_register.display();
       }
@@ -167,9 +174,25 @@ void loop() {
         menu = 3;
       }
       else if (user_input == 4) {
-        Serial.println("Saving configuration...");
-        cylinder_register.save();
-        timer_register.save();
+        Serial.print("Input the "); Serial.print("current time (DD/MM/YY w HH:MM:SS.) "); 
+        byte day, month, year, dow, hour, minute, second;
+        read_date_time(day, month, year, dow, hour, minute, second);
+        
+        rtc.setDOW(dow);
+        rtc.setTime(hour, minute, second);
+        rtc.setDate(day, month, 2000 + year);
+      }
+      else if (user_input == 5) {
+        Serial.print("Saving configuration...");
+        bool saved = true;
+        saved = saved && cylinder_register.save();
+        saved = saved && timer_register.save();
+        if (saved) {
+          Serial.println("YES"); 
+        }
+        else {
+          Serial.println("NO"); 
+        }
         Serial.println("Bye, bye!"); 
         state = SLEEPING;
       }
@@ -177,7 +200,7 @@ void loop() {
     //------ Cylinders
     else if (menu == 2) {
       if (user_input == 1) {
-        Serial.print("Input the "); Serial.println("number of cylinders.");
+        Serial.print("Input the "); Serial.print("number of "); Serial.println("cylinders.");
         int nr_cylinders = read_user_input();
         cylinder_register.set_nr_cylinders(nr_cylinders);
       }
@@ -186,10 +209,10 @@ void loop() {
         cylinder_register.water_stop_time = read_user_input();
       }
       else if (user_input == 3) {
-        Serial.print("Input the "); Serial.println("cylinder number.");
+        Serial.print("Input the "); Serial.print("cylinder "); Serial.println("number.");
         int cylinder_number = read_user_input();
         
-        Serial.print("Input the "); Serial.println("cylinder pomp running time.");
+        Serial.print("Input the "); Serial.print("cylinder "); Serial.println("pomp running time.");
         int running_time = read_user_input();
         cylinder_register.get_cylinder(cylinder_number).pomp_running_time = running_time;
       }
@@ -200,19 +223,19 @@ void loop() {
     //------ Timers
     else if (menu == 3) {
       if (user_input == 1) {
-        Serial.print("Input the "); Serial.println("number of timers.");
-        nr_timers = read_user_input();
+        Serial.print("Input the "); Serial.print("number of "); Serial.println("timers.");
+        int nr_timers = read_user_input();
         timer_register.set_nr_timers(nr_timers);
       }
       else if (user_input == 2) {
-        Serial.print("Input the "); Serial.println("timer number.");
+        Serial.print("Input the "); Serial.print("timer "); Serial.println("number.");
         int timer_number = read_user_input();
 
-        Serial.print("Input the "); Serial.println("timer hour.");
+        Serial.print("Input the "); Serial.print("timer "); Serial.println("hour.");
         int hour = read_user_input();
         timer_register.get_timer(timer_number).hour = (byte)hour;
 
-        Serial.print("Input the "); Serial.println("timer minute.");
+        Serial.print("Input the "); Serial.print("timer "); Serial.println("minute.");
         int minute = read_user_input();
         timer_register.get_timer(timer_number).minute = (byte)minute;
       }
@@ -272,7 +295,7 @@ void loop() {
      * (i.e., SELECTING).
      */
     
-    pinZeroPosValue = digitalRead(pinZeroPos);
+    int pinZeroPosValue = digitalRead(pinZeroPos);
     if (pinZeroPosValue == HIGH){
        state = SELECTING;
     } else {
@@ -341,7 +364,7 @@ void loop() {
     Serial.print("Delivering at: ");
     
     //Log time
-    printDateTime(rtc.getTime());
+    print_date_time(rtc.getTime());
     Serial.println();
     
     //  Pomp the water
@@ -364,7 +387,6 @@ void loop() {
      * state.
      */
 
-    completion_time = rtc.getTime();
     state = SLEEPING;
      
   } else 
@@ -412,7 +434,7 @@ void loop() {
     }
 
     // Check for request for demo mode
-    pinValue = digitalRead(pinDemo);
+    int pinValue = digitalRead(pinDemo);
     if(pinValue == HIGH){
       Serial.println("Demo mode activated.");
       state = DUMMY;

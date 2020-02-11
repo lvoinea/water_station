@@ -145,12 +145,12 @@ bool CylinderRegister::save(){
 
   // Save the water stop time
   save_address += sizeof(int);
-  result = result && EEPROM.updateInt(save_address, water_stop_time);
+  result = EEPROM.updateInt(save_address, water_stop_time) || result;
 
   // Save the registered cylinders
   // Only the used number of cylinders is saved. 
   for(int i=0; i<used_cylinders; i++){
-    result = result && cylinder_list[i].save();
+    result = cylinder_list[i].save() || result;
   }
 
   return(result);

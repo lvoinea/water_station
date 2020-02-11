@@ -53,7 +53,7 @@ bool Timer::save(){
 
   // Save the timer minute
   save_address += sizeof(byte);
-  result = result && EEPROM.updateByte(save_address, minute);
+  result = EEPROM.updateByte(save_address, minute) || result;
 
   return(result);
 }
@@ -70,23 +70,19 @@ class TimerRegister{
         // Address of registry in EEPROM
         int address;
         Timer timer_list[NR_TIMERS];
-        int current_timer = 0;
         int used_timers = 0;
 
     public:
         TimerRegister();
         void init();
-        void reset();
         void clear();
         int get_nr_timers();
         void set_nr_timers(int nr_timers);
         bool load();
         bool save();
         void display();
-
-        Timer get_next_timer();
         Timer& get_timer(int pos);
-        bool has_next_timer();
+
 };
 
 TimerRegister::TimerRegister(){
@@ -110,10 +106,6 @@ void TimerRegister::init(){
   }
 }
 
-void TimerRegister::reset(){
-  current_timer = 0;
-}
-
 void TimerRegister::set_nr_timers(int nr_timers){
   if (nr_timers <= NR_TIMERS){
     used_timers = nr_timers;
@@ -125,7 +117,6 @@ void TimerRegister::set_nr_timers(int nr_timers){
 
 bool TimerRegister::load(){
   // Load the registry values from the EEPROM
-  reset();
   int read_address;
 
   // Read the actual number of used timers
@@ -151,7 +142,7 @@ bool TimerRegister::save(){
   // Save the registered timers
   // Only the used number of timers is saved. 
   for(int i=0; i<used_timers; i++){
-    result = result && timer_list[i].save();
+    result = timer_list[i].save() || result;
   }
 
   return(result);
@@ -177,14 +168,6 @@ void TimerRegister::display(){
 
 int TimerRegister::get_nr_timers(){
   return used_timers;
-}
-
-bool TimerRegister::has_next_timer(){
-  return current_timer < used_timers;
-}
-
-Timer TimerRegister::get_next_timer(){
-  return timer_list[current_timer++];
 }
 
 Timer& TimerRegister::get_timer(int pos){
