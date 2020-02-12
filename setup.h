@@ -15,7 +15,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial.println("Initializing...");
+  Serial.println("> Initializing...");
 
   //-------------------- Control Panel
   pinMode(pinDemo, INPUT);
@@ -23,44 +23,12 @@ void setup() {
 
   //-------------------- Real Time Clock (DS1302)
   if(!is_error){
-    Rtc.Begin();
 
-    RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
-    printDateTime(compiled);
-    Serial.println();
+    
+    pinMode(pinSDA, INPUT_PULLUP);
+    pinMode(pinSCL, INPUT_PULLUP);
 
-    if (!Rtc.IsDateTimeValid()) 
-    {
-        // Common Causes:
-        //    1) first time you ran and the device wasn't running yet
-        //    2) the battery on the device is low or even missing
-
-        Serial.println("RTC lost confidence in the DateTime!");
-        Rtc.SetDateTime(compiled);
-    }
-
-    if (Rtc.GetIsWriteProtected())
-    {
-        Serial.println("RTC was write protected, enabling writing now");
-        Rtc.SetIsWriteProtected(false);
-    }
-
-    if (!Rtc.GetIsRunning())
-    {
-        Serial.println("RTC was not actively running, starting now");
-        Rtc.SetIsRunning(true);
-    }
-
-    RtcDateTime now = Rtc.GetDateTime();
-    if (now <= compiled) 
-    {
-        Serial.println("RTC is older than compile time!  (Updating DateTime)");
-        Rtc.SetDateTime(compiled);
-    }
-    else if (now > compiled) 
-    {
-        Serial.println("RTC is newer than compile time. (this is expected)");
-    }
+    rtc.begin();
     
   }
   //-------------------- Pomp Driver
@@ -85,23 +53,23 @@ void setup() {
 
   //-------------------- Cylinder register
   if(!is_error){
-    Serial.print("Loading cylinders ... ");
+    Serial.print("> Loading "); Serial.print("cylinders ... ");
     cylinder_register.load();
     Serial.println("OK");
     cylinder_register.display();
+    Serial.println();
   }
 
   //------------------- Timer register
   if(!is_error){
-    Serial.print("Loading timers ... ");
+    Serial.print("> Loading "); Serial.print("timers ... ");
     timer_register.load();
     Serial.println("OK");
     timer_register.display();
   }
 
   //------------------- Initialization done
-  Serial.println("Initialization OK");
-  RtcDateTime now = Rtc.GetDateTime();
-  printDateTime(now);
+  Serial.print("> Initialization finished at: ");
+  print_date_time(rtc.getTime());
   Serial.println();
 }

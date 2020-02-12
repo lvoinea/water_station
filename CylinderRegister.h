@@ -145,12 +145,12 @@ bool CylinderRegister::save(){
 
   // Save the water stop time
   save_address += sizeof(int);
-  result = result && EEPROM.updateInt(save_address, water_stop_time);
+  result = EEPROM.updateInt(save_address, water_stop_time) || result;
 
   // Save the registered cylinders
   // Only the used number of cylinders is saved. 
   for(int i=0; i<used_cylinders; i++){
-    result = result && cylinder_list[i].save();
+    result = cylinder_list[i].save() || result;
   }
 
   return(result);
@@ -158,18 +158,19 @@ bool CylinderRegister::save(){
 
 void CylinderRegister::display(){
   Serial.println();
-  Serial.print("  Cylinders: ");
+  Serial.print("- Cylinders: ");
   if (used_cylinders > 0) {
     Serial.println(used_cylinders);
+    Serial.println("  *************");
     for (int i=0; i<used_cylinders; i++){
-      Serial.println("  ----------");
-      Serial.print("  Cyl: ");
+      Serial.print("  Cylinder: ");
       Serial.println(i);
       Serial.print("  Running time: ");
       Serial.println(cylinder_list[i].pomp_running_time);
+      Serial.println("  ----------");
     }
-    Serial.println("  ----------");
-    Serial.print("  Water stop time: ");
+    Serial.println();
+    Serial.print("- Water stop time: ");
     Serial.println(water_stop_time);
   } else {
     Serial.println("not configured");

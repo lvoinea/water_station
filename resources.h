@@ -8,22 +8,14 @@
 
 //---------------------  Real Time Clock (DS1302)
 
-// Set time for DS1302RTC
-// In order to set-up the time the chip has to be suplied with 5V.
-// However, reading the time is in that case not stable.
-// In order to get stable read, one needs to suply the chip with 3.3V.
-
-#include <ThreeWire.h>  
-#include <RtcDS1302.h>
+// https://github.com/NorthernWidget/DS3231
+#include <DS3231.h>
 #include "rtc.h"
 
-ThreeWire myWire(pinRtcDat, pinRtcClk, pinRtcRst); 
-RtcDS1302<ThreeWire> Rtc(myWire);
+DS3231  rtc(pinSDA, pinSCL);
 
 //-------------------- Pomp Driver
 #include "pomp_driver.h"
-
-
 
 //-------------------- Arm Motor (28BYJ-48 + ULN2003)
 #include <AccelStepper.h>
@@ -61,4 +53,3 @@ Cylinder current_cylinder;
 #include "TimerRegister.h"
 
 TimerRegister timer_register;
-Timer current_timer;
