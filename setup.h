@@ -15,7 +15,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial.println("Initializing...");
+  Serial.println("> Initializing...");
 
   //-------------------- Control Panel
   pinMode(pinDemo, INPUT);
@@ -53,22 +53,23 @@ void setup() {
 
   //-------------------- Cylinder register
   if(!is_error){
-    Serial.print("Loading "); Serial.print("cylinders ... ");
+    Serial.print("> Loading "); Serial.print("cylinders ... ");
     cylinder_register.load();
     Serial.println("OK");
     cylinder_register.display();
+    Serial.println();
   }
 
   //------------------- Timer register
   if(!is_error){
-    Serial.print("Loading "); Serial.print("timers ... ");
+    Serial.print("> Loading "); Serial.print("timers ... ");
     timer_register.load();
     Serial.println("OK");
     timer_register.display();
   }
 
   //------------------- Initialization done
-  Serial.print("Initialization finished at: ");
+  Serial.print("> Initialization finished at: ");
   print_date_time(rtc.getTime());
   Serial.println();
 }

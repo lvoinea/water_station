@@ -158,18 +158,19 @@ bool CylinderRegister::save(){
 
 void CylinderRegister::display(){
   Serial.println();
-  Serial.print("  Cylinders: ");
+  Serial.print("- Cylinders: ");
   if (used_cylinders > 0) {
     Serial.println(used_cylinders);
+    Serial.println("  *************");
     for (int i=0; i<used_cylinders; i++){
-      Serial.println("  ----------");
-      Serial.print("  Cyl: ");
+      Serial.print("  Cylinder: ");
       Serial.println(i);
       Serial.print("  Running time: ");
       Serial.println(cylinder_list[i].pomp_running_time);
+      Serial.println("  ----------");
     }
-    Serial.println("  ----------");
-    Serial.print("  Water stop time: ");
+    Serial.println();
+    Serial.print("- Water stop time: ");
     Serial.println(water_stop_time);
   } else {
     Serial.println("not configured");

@@ -13,8 +13,6 @@
 
 /**
  * TODO:
- *
- * - Initialize the cylinder register from EPROM.
  * - Add amplification circuit to buzzer.
  * 
  *  DONE:
@@ -26,5 +24,6 @@
  * - Fix serial display.
  * - Test with RTC in circuit.
  * - Read configuration settings from serial.
+ * - Initialize the cylinder register from EPROM.
  * 
  */

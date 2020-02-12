@@ -119,6 +119,9 @@ void loop() {
      * - per cylinder distance from the previous stop and number
      *   of seconds to pump.
      */
+    digitalWrite(pinOn, HIGH); 
+    digitalWrite(pinError, HIGH); 
+
 
     //-------------------- Display menu
     if (menu == 0) {
@@ -161,11 +164,17 @@ void loop() {
     //-------------------- Handle user input
     if (menu == 0) {
       if (user_input == 1) {
-        Serial.print("  Current time: ");
+        Serial.print("========");Serial.print("========");Serial.print("========");Serial.println();
+        Serial.print("> Current time: ");
         print_date_time(rtc.getTime());
         Serial.println();
+
+        Serial.print("> Temperature: ");
+        Serial.println(rtc.getTemp());
+        
         cylinder_register.display();
         timer_register.display();
+        Serial.print("========");Serial.print("========");Serial.print("========");Serial.println();
       }
       else if (user_input == 2) {
         menu = 2;
@@ -184,9 +193,9 @@ void loop() {
       }
       else if (user_input == 5) {
         Serial.print("Saving configuration...");
-        bool saved = true;
-        saved = saved && cylinder_register.save();
-        saved = saved && timer_register.save();
+        bool saved = false;
+        saved = cylinder_register.save() || saved;
+        saved = timer_register.save() || saved;
         if (saved) {
           Serial.println("YES"); 
         }
@@ -243,6 +252,8 @@ void loop() {
         menu = 0;
       }
     }
+    digitalWrite(pinOn, LOW); 
+    digitalWrite(pinError, LOW); 
   }
   //------------------------------------------------------------ INITIALIZING
   if (state == INITIALIZING) {
