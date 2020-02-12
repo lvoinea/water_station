@@ -3,13 +3,10 @@
  *  and sets program wide constants.
  */
 
-
 //--------------------- Serial
-
 #define SERIAL_SPEED 9600
 
 //--------------------- Control Panel
-
 #define pinDemo A0
 #define pinSettings A1
 

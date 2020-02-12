@@ -6,9 +6,7 @@
  *  resource.
  */
 
-//---------------------  Real Time Clock (DS1302)
-
-// https://github.com/NorthernWidget/DS3231
+//---------------------  Real Time Clock (DS3231)
 #include <DS3231.h>
 #include "rtc.h"
 

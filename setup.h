@@ -23,13 +23,9 @@ void setup() {
 
   //-------------------- Real Time Clock (DS1302)
   if(!is_error){
-
-    
     pinMode(pinSDA, INPUT_PULLUP);
     pinMode(pinSCL, INPUT_PULLUP);
-
     rtc.begin();
-    
   }
   //-------------------- Pomp Driver
   if(!is_error){

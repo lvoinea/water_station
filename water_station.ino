@@ -27,3 +27,9 @@
  * - Initialize the cylinder register from EPROM.
  * 
  */
+
+/**
+ * RESOURCES:
+ * - http://www.rinkydinkelectronics.com/library.php?id=73
+ * 
+ */
