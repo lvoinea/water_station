@@ -13,18 +13,7 @@
 #define pinDemo A0
 #define pinSettings A1
 
-//---------------------  Real Time Clock (DS1302)
-// DS1302:  
-//      CE pin    -> Arduino Digital 9
-//      I/O pin   -> Arduino Digital 8
-//      SCLK pin  -> Arduino Digital 7
-//      VCC pin   -> VCC
-//      GND pin   -> GND
-
-//#define pinRtcClk 7
-//#define pinRtcDat 8
-//#define pinRtcRst 9
-
+//---------------------  Real Time Clock (DS3231)
 #define pinSDA 8
 #define pinSCL 9
 
