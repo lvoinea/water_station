@@ -97,6 +97,16 @@ void loop() {
 
   //------------------------------------------------------------ DUMMY
   if (state == DUMMY){
+    /**
+     * This is a debug state used only during develoment.
+     * It stubs the following states
+     *  INITIALIZING
+     *  CALIBRATING
+     *  SELECTING
+     *  ACQUIRING
+     *  DELIVERING
+     *  FINISHED
+     */
     for (int i = 0; i < 3; i++) { 
       pomp_on();
       delay(1000); 
@@ -448,7 +458,7 @@ void loop() {
     int pinValue = digitalRead(pinDemo);
     if(pinValue == HIGH){
       Serial.println("Demo mode activated.");
-      state = DUMMY;
+      state = INITIALIZING;
     } 
     
     // Check for request for set-up
@@ -461,7 +471,7 @@ void loop() {
     // Check for timers
     if (state == SLEEPING) {
       if (is_time_to_wake(rtc.getTime())) {
-        state = DUMMY;
+        state = INITIALIZING;
       }
     }
 

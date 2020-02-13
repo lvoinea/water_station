@@ -30,6 +30,8 @@
 
 /**
  * RESOURCES:
- * - http://www.rinkydinkelectronics.com/library.php?id=73
+ * - http://www.rinkydinkelectronics.com/library.php?id=73 - DS3231
+ * - https://thijs.elenbaas.net/2012/07/extended-eeprom-library-for-arduino - EEPROMex
+ * - https://www.baldengineer.com/arduino-internal-pull-up-resistor-tutorial.html - Pullup resistors
  * 
  */
