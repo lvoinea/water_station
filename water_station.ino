@@ -13,6 +13,7 @@
 
 /**
  * TODO:
+ * - Add distance
  * - Add amplification circuit to buzzer.
  * 
  *  DONE:

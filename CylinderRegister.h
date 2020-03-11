@@ -1,3 +1,5 @@
+#include <Keyboard.h>
+
 
 //------------------------------------------------------------------- Cylinder
 class Cylinder{
@@ -25,6 +27,9 @@ void Cylinder::init(){
    // Only pomp running time is saved, so reserve memory for 
    // one int only.
   address = reserve_int_eeprom();
+
+   // The umber of steps will be the same for each cylinder except the first one
+   steps =  int(STEPS_PER_REV / NR_CYLINDERS);
 }
 
 void Cylinder::load(){
@@ -99,6 +104,7 @@ void CylinderRegister::init(){
   for(int i=0; i<NR_CYLINDERS; i++){
     cylinder_list[i].init();
   }
+  cylinder_list[0].steps = 200;
 }
 
 void CylinderRegister::reset(){

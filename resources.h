@@ -23,7 +23,7 @@ DS3231  rtc(pinSDA, pinSCL);
 AccelStepper cArmMotor(AccelStepper::HALF4WIRE, pinArmMotor1, pinArmMotor3, pinArmMotor2, pinArmMotor4);
 
 //-------------------- Speaker
-#include "pitches.h"
+#include "speaker.h"
 
 //-------------------- Power saver
 #include <avr/sleep.h>  

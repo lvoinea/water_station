@@ -87,8 +87,10 @@ void shutdown(bool success=true){
 
   if (success) {
     state = FINISHED;
+    playMelody(ok_melody, ok_durations, ok_nr_notes);
   } else {
     state = NOK;
+    playMelody(fail_melody, fail_durations, fail_nr_notes);
   }
 }
 
@@ -455,15 +457,15 @@ void loop() {
     }
 
     // Check for request for demo mode
-    int pinValue = digitalRead(pinDemo);
-    if(pinValue == HIGH){
+    int pinDemoValue = digitalRead(pinDemo);
+    if(pinDemoValue == HIGH){
       Serial.println("Demo mode activated.");
       state = INITIALIZING;
     } 
     
     // Check for request for set-up
-    pinValue = digitalRead(pinSettings);
-    if(pinValue == HIGH){
+    int pinSettingsValue = digitalRead(pinSettings);
+    if(pinSettingsValue == HIGH){
       Serial.println("Update settings.");
       state = SETTINGUP;
     } 
