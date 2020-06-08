@@ -109,12 +109,11 @@ void loop() {
      *  DELIVERING
      *  FINISHED
      */
-    for (int i = 0; i < 3; i++) { 
-      pomp_on();
-      delay(1000); 
-      pomp_off();
-      delay(500); 
-    }
+     
+    // TODO: Debug code fits between the lines below
+    //---------------------------
+    
+    //---------------------------
     state = SLEEPING;
   }
   //------------------------------------------------------------ SETTINGUP
@@ -461,6 +460,7 @@ void loop() {
     if(pinDemoValue == HIGH){
       Serial.println("Demo mode activated.");
       state = INITIALIZING;
+      //state = DUMMY;
     } 
     
     // Check for request for set-up
