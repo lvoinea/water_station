@@ -35,7 +35,7 @@ void setup() {
   
   //-------------------- Zero position switch
   if(!is_error){
-    pinMode(pinZeroPos, INPUT);  
+    pinMode(pinZeroPos, INPUT_PULLUP);  
   }
 
   //-------------------- Motor (28BYJ-48 + ULN2003)

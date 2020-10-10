@@ -301,7 +301,7 @@ void loop() {
     cArmMotor.setMaxSpeed(1000.0);
     cArmMotor.setAcceleration(100.0);
     cArmMotor.move(ZERO_POSITION);
-    cArmMotor.setSpeed(-1000);
+    cArmMotor.setSpeed(1000);
 
     state = CALIBRATING;
   } else
@@ -312,13 +312,13 @@ void loop() {
      * In this state the microcontroller moves the arm clockwise and tries
      * to detect when the arm reaches the start position. When that 
      * position is reached, the switch connected to the pinZeroPos
-     * will be pressed by the arm and the pin will read HIGH. At that
+     * will be pressed by the arm and the pin will read LOW. At that
      * point the microcontroller will enter the cylinder selection state
      * (i.e., SELECTING).
      */
     
     int pinZeroPosValue = digitalRead(pinZeroPos);
-    if (pinZeroPosValue == HIGH){
+    if (pinZeroPosValue == LOW){
        state = SELECTING;
     } else {
       if (cArmMotor.distanceToGo() == 0){
@@ -345,8 +345,8 @@ void loop() {
     
      if (cylinder_register.has_next_cylinder()){
         current_cylinder = cylinder_register.get_next_cylinder();
-        cArmMotor.move(current_cylinder.steps);
-        cArmMotor.setSpeed(1000);
+        cArmMotor.move(-current_cylinder.steps);
+        cArmMotor.setSpeed(-1000);
         state = ACQUIRING;
       } else {
         shutdown();

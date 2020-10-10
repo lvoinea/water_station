@@ -104,7 +104,9 @@ void CylinderRegister::init(){
   for(int i=0; i<NR_CYLINDERS; i++){
     cylinder_list[i].init();
   }
-  cylinder_list[0].steps = 200;
+  cylinder_list[0].steps = 10;
+  cylinder_list[3].steps += 100;
+  cylinder_list[4].steps += 100;
 }
 
 void CylinderRegister::reset(){
