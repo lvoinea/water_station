@@ -17,7 +17,7 @@ DS3231  rtc(pinSDA, pinSCL);
 
 //-------------------- Arm Motor (28BYJ-48 + ULN2003)
 #include <AccelStepper.h>
-#include <MultiStepper.h>
+//#include <MultiStepper.h>
 
 // Initialize with pin sequence IN1-IN3-IN2-IN4 for using the AccelStepper with 28BYJ-48
 AccelStepper cArmMotor(AccelStepper::HALF4WIRE, pinArmMotor1, pinArmMotor3, pinArmMotor2, pinArmMotor4);

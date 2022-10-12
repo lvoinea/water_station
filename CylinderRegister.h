@@ -63,7 +63,7 @@ class CylinderRegister{
     // Address of registry in EEPROM
     int address;
     Cylinder cylinder_list[NR_CYLINDERS];
-    int current_cylinder = 0;
+    int next_cylinder_idx = 0;
     int used_cylinders = 0;
   
   public:
@@ -77,7 +77,7 @@ class CylinderRegister{
     bool save();
     void display();
 
-    Cylinder get_next_cylinder();
+    Cylinder& get_next_cylinder();
     Cylinder& get_cylinder(int pos);
     bool has_next_cylinder();
 };
@@ -110,7 +110,7 @@ void CylinderRegister::init(){
 }
 
 void CylinderRegister::reset(){
-  current_cylinder = 0;
+  next_cylinder_idx = 0;
 }
 
 void CylinderRegister::set_nr_cylinders(int nr_cylinders){
@@ -129,7 +129,7 @@ bool CylinderRegister::load(){
 
   // Read the actual number of used cylinders
   read_address = address;
-  used_cylinders = EEPROM.readInt(read_address);
+  set_nr_cylinders(EEPROM.readInt(read_address));
 
   // Read the water_stop_time
   read_address += sizeof(int);
@@ -190,11 +190,13 @@ int CylinderRegister::get_nr_cylinders(){
 }
 
 bool CylinderRegister::has_next_cylinder(){
-  return current_cylinder < used_cylinders;
+  return next_cylinder_idx < used_cylinders;
 }
 
-Cylinder CylinderRegister::get_next_cylinder(){
-  return cylinder_list[current_cylinder++];
+Cylinder& CylinderRegister::get_next_cylinder(){
+  int next_index = next_cylinder_idx;
+  next_cylinder_idx++;
+  return cylinder_list[next_index];
 }
 
 Cylinder& CylinderRegister::get_cylinder(int pos){

@@ -121,7 +121,7 @@ bool TimerRegister::load(){
 
   // Read the actual number of used timers
   read_address = address;
-  used_timers = EEPROM.readInt(read_address);
+  set_nr_timers(EEPROM.readInt(read_address));
 
   // Loads the registered timers
   // Only the used number of timers is loaded. 

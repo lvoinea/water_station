@@ -128,7 +128,7 @@ void loop() {
      * - number of cylinders in use (can specify less cylinders
      *   than physically available)
      * - per cylinder distance from the previous stop and number
-     *   of seconds to pump.
+     *   of miliseconds to pump.
      */
     digitalWrite(pinOn, HIGH); 
     digitalWrite(pinError, HIGH); 
@@ -152,7 +152,7 @@ void loop() {
       Serial.println("Cylinder Menu:");
       Serial.println("------------");
       Serial.print(" 1 - "); Serial.print("Set number of "); Serial.println("cylinders");
-      Serial.print(" 2 - "); Serial.println("Set water stop time");
+      Serial.print(" 2 - "); Serial.println("Set water stop time (ms)");
       Serial.print(" 3 - "); Serial.print("Configure "); Serial.println("cylinder");
       Serial.print(" 4 - "); Serial.println("Back");
       Serial.println("-------------");
@@ -174,6 +174,9 @@ void loop() {
 
     //-------------------- Handle user input
     if (menu == 0) {
+
+      //NOTE: The strings are broken below into resuable pieces to save program memory.
+      
       if (user_input == 1) {
         Serial.print("========");Serial.print("========");Serial.print("========");Serial.println();
         Serial.print("> Current time: ");
@@ -232,7 +235,7 @@ void loop() {
         Serial.print("Input the "); Serial.print("cylinder "); Serial.println("number.");
         int cylinder_number = read_user_input();
         
-        Serial.print("Input the "); Serial.print("cylinder "); Serial.println("pomp running time.");
+        Serial.print("Input the "); Serial.print("cylinder "); Serial.println("pomp running time (ms).");
         int running_time = read_user_input();
         cylinder_register.get_cylinder(cylinder_number).pomp_running_time = running_time;
       }
@@ -248,6 +251,7 @@ void loop() {
         timer_register.set_nr_timers(nr_timers);
       }
       else if (user_input == 2) {
+        
         Serial.print("Input the "); Serial.print("timer "); Serial.println("number.");
         int timer_number = read_user_input();
 
@@ -298,10 +302,13 @@ void loop() {
         
     // Arm motor
     cArmMotor.enableOutputs();
+    cArmMotor.setCurrentPosition(0);
     cArmMotor.setMaxSpeed(1000.0);
-    cArmMotor.setAcceleration(100.0);
-    cArmMotor.move(ZERO_POSITION);
-    cArmMotor.setSpeed(1000);
+    cArmMotor.setAcceleration(50.0);
+    cArmMotor.moveTo(ZERO_POSITION);
+    cArmMotor.setSpeed(MOTOR_SPEED);
+
+    cylinder_register.reset();
 
     state = CALIBRATING;
   } else
@@ -345,8 +352,14 @@ void loop() {
     
      if (cylinder_register.has_next_cylinder()){
         current_cylinder = cylinder_register.get_next_cylinder();
+
+        #ifdef DEBUG_MODE
+        Serial.print(current_cylinder.steps);  Serial.print(" "); Serial.print(current_cylinder.pomp_running_time); Serial.println();
+        #endif
+        
+        cArmMotor.enableOutputs();
         cArmMotor.move(-current_cylinder.steps);
-        cArmMotor.setSpeed(-1000);
+        cArmMotor.setSpeed(-MOTOR_SPEED);
         state = ACQUIRING;
       } else {
         shutdown();
@@ -365,6 +378,7 @@ void loop() {
     
     //Check if the stepper reached the target position
     if (cArmMotor.distanceToGo() == 0) {
+      cArmMotor.disableOutputs();
       state = DELIVERING;
     } else {
       cArmMotor.runSpeed();
@@ -390,11 +404,18 @@ void loop() {
     Serial.println();
     
     //  Pomp the water
+    #ifdef DEBUG_MODE
+    Serial.print("Pomp "); Serial.println(current_cylinder.pomp_running_time);
+    #endif
+    
     pomp_on();
     delay(current_cylinder.pomp_running_time);
     pomp_off();
 
     // Wait for the water to stop
+    #ifdef DEBUG_MODE
+    Serial.print("Wait "); Serial.println(cylinder_register.water_stop_time); 
+    #endif
     delay(cylinder_register.water_stop_time);
     
     state = SELECTING;

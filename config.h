@@ -3,6 +3,8 @@
  *  and sets program wide constants.
  */
 
+#define DEBUG_MODE
+
 //--------------------- Serial
 #define SERIAL_SPEED 9600
 
@@ -38,7 +40,8 @@
 // Reference position for start (~ a bit more than a 360 degree turn)
 // During calibration, motor will try to reach to this position, and stop when
 // the zero position switch is triggered. 
-#define ZERO_POSITION -(STEPS_PER_REV+100)
+#define ZERO_POSITION STEPS_PER_REV
+#define MOTOR_SPEED 800
 
 //-------------------- Speaker
 #define pinSpeaker 11
